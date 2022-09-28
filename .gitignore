@@ -1,5 +1,4 @@
 logs/
 token.js
 node_modules/
-.vs/
 package_lock.json
