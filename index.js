@@ -25,11 +25,8 @@ con.on("INTERACTION_CREATE", async data => {
         if (h.message_id == interaction.message.id && h.component_id == interaction.data.custom_id) {
           clearTimeout(h.ttlTimeout)
           h.ttlTimeout = setTimeout(() => {
-            console.log("removing listeners")
-            console.log(componentListeners.length)
             h.onRemove()
             componentListeners = componentListeners.filter((a) => a.message_id !== message_id || a.component_id !== component_id)
-            console.log(componentListeners.length)
           }, h.ttl).unref()
           return h.listener(interaction)
         }
@@ -52,11 +49,8 @@ con.on("INTERACTION_CREATE", async data => {
 })
 function addComponentListener(message_id, component_id, listener, { ttl = 60000, onRemove = () => { } } = {}) {
   var ttlTimeout = setTimeout(() => {
-    console.log("removing listeners")
-    console.log(componentListeners.length)
     onRemove()
     componentListeners = componentListeners.filter((a) => a.message_id !== message_id || a.component_id !== component_id)
-    console.log(componentListeners.length)
   }, ttl).unref()
   componentListeners.push({ message_id, component_id, listener, ttlTimeout, ttl, onRemove })
 }
