@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\applicationCommands",
+    "\\buildCommands",
+    "\\lib",
+    "\\lib\\builders",
+    "\\lib\\types",
+    "\\lib\\ws"
+  ],
+  "SelectedNode": "\\lib\\GatewayConnection.js",
+  "PreviewInSolutionExplorer": false
+}

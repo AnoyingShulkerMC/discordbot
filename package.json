@@ -1,0 +1,11 @@
+{
+  "name": "discordlib",
+  "version": "0.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "csv-stringify": "^6.2.0",
+    "mime": "^3.0.0",
+    "node-fetch": "^3.2.10"
+  }
+}
