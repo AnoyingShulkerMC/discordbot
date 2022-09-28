@@ -23,11 +23,13 @@ con.on("INTERACTION_CREATE", async data => {
       
       componentListeners.forEach((h,v) => {
         if (h.message_id == interaction.message.id && h.component_id == interaction.data.custom_id) {
-          clearTimeout(h.ttlTimeout)
-          h.ttlTimeout = setTimeout(() => {
-            h.onRemove()
-            componentListeners = componentListeners.filter((a) => a.message_id !== message_id || a.component_id !== component_id)
-          }, h.ttl).unref()
+          if (h.ttl !== Infinity) {
+            clearTimeout(h.ttlTimeout)
+            h.ttlTimeout = setTimeout(() => {
+              h.onRemove()
+              componentListeners = componentListeners.filter((a) => a.message_id !== h.message_id || a.component_id !== h.component_id)
+            }, h.ttl).unref()
+          }
           return h.listener(interaction)
         }
       })
@@ -48,10 +50,13 @@ con.on("INTERACTION_CREATE", async data => {
   }
 })
 function addComponentListener(message_id, component_id, listener, { ttl = 60000, onRemove = () => { } } = {}) {
-  var ttlTimeout = setTimeout(() => {
-    onRemove()
-    componentListeners = componentListeners.filter((a) => a.message_id !== message_id || a.component_id !== component_id)
-  }, ttl).unref()
+  var ttlTimeout = null;
+  if (ttl !== Infinity)  {
+    ttlTimeout = setTimeout(() => {
+      onRemove()
+      componentListeners = componentListeners.filter((a) => a.message_id !== message_id || a.component_id !== component_id)
+    }, ttl).unref()
+  }
   componentListeners.push({ message_id, component_id, listener, ttlTimeout, ttl, onRemove })
 }
 function addModalListener(component_id, listener) {

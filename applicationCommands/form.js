@@ -5,7 +5,6 @@ export default async function (interaction, options, { api, con, addComponentLis
   var timesPressed = 0
   await interaction.respond(4, {
     content: "You are making a form",
-    flags: 64,
     components: [
       {
         type: 1,
@@ -48,6 +47,7 @@ export default async function (interaction, options, { api, con, addComponentLis
   var message = await interaction.getOriginal()
   var modalOptions = {}
   var spreadsheet = []
+  var embed = {fields: []}
   addComponentListener(message.id, "add_option_paragraph", async component => {
     var custom_id = "add_option_" + Date.now()
     if (modal.components.length == 5) return component.respond(4, {flags: 64, content: "Form inputs are limited to 5 inputs"})
@@ -88,7 +88,10 @@ export default async function (interaction, options, { api, con, addComponentLis
         type: 1,
         components: [component]
       })
-      i.respond(4, {flags: 64, content: "Option added!"})
+      embed.fields.push({name: values.label, value: `Type: Paragraph\nPlaceholder: ${values.placeholder === ""? "N/A" : values.placeholder}`})
+      i.respond(7, {
+        embeds: [embed]
+      })
     })
   })
   addComponentListener(message.id, "add_option_text", async component => {
@@ -131,7 +134,10 @@ export default async function (interaction, options, { api, con, addComponentLis
         type: 1,
         components: [component]
       })
-      i.respond(4, { flags: 64, content: "Option added!" })
+      embed.fields.push({ name: values.label, value: `Type: Short Response\nPlaceholder: ${values.placeholder === "" ? "N/A" : values.placeholder}` })
+      i.respond(7, {
+        embeds: [embed]
+      })
     })
   })
   addComponentListener(message.id, "preview", (i) => {
@@ -164,7 +170,7 @@ export default async function (interaction, options, { api, con, addComponentLis
         }]
       })
     })).json()
-    interaction.editOriginal({ components: [{ type: 1, components: [] }] })
+    interaction.deleteOriginal()
     addComponentListener(msg.id, "export_csv", async a => {
       await a.respond(5, { flags: 64 })
       var formParams = new FormData()
@@ -182,14 +188,20 @@ export default async function (interaction, options, { api, con, addComponentLis
     addComponentListener(msg.id, "fill_form", (a) => {
       a.respond(9, modal)
     })
+    var headers = {}
+    for (var value of Object.values(modalOptions)) {
+      headers[value] = value
+    }
+    headers["User"] = "User"
+    spreadsheet.push(headers)
     addModalListener(modal_id, (a, values) => {
       a.respond(4, { content: "Form submitted", flags: 64 })
       var object = {}
       for (var [key, value] of Object.entries(values)) {
         object[modalOptions[key]] = value
       }
+      object["User"] = a.member.user.username + "#" + a.member.user.discriminator
       spreadsheet.push(object)
-      console.log(spreadsheet)
     })
     i.respond(4, {flags: 64, content: "Done!"})
   })
