@@ -4,13 +4,40 @@ import Interaction from "./lib/types/Interaction.js"
 import { createWriteStream } from "node:fs"
 import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
+import express from "express"
+import nacl from "tweetnacl"
+const publicKey = (await import("./pubkey.js")).default 
 const token = (await import("./token.js")).default
 const api = new APIManager(token)
 const con = new GatewayConnection(token, { intents: [GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS] })
 const log = createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`))
+const USE_ENDPOINT_URL = true
+var port = process.env.PORT || 8080
 var componentListeners = []
 var modalListeners = []
-con.on("INTERACTION_CREATE", async data => {
+if (USE_ENDPOINT_URL) {
+  const app = express()
+  app.use(express.raw({type: "*/*"}))
+  app.get("/", (req, res) => {
+     // Verify the contents
+    const signature = req.get('X-Signature-Ed25519');
+    const timestamp = req.get('X-Signature-Timestamp');
+    var verified = nacl.sign.detached.verify(
+      Buffer.from(Buffer.concat([timestamp, body])),
+      Buffer.from(signature, "hex"),
+      Buffer.from(publicKey, "hex")
+    )
+    console.log(verified)
+    if (!verified) {
+      return res.status(401).end("invalid req signature")
+    }
+  })
+  app.listen(port, () => console.log("Listenening on "+ port))
+} else {
+  con.on("INTERACTION_CREATE", handleInteraction)
+}
+
+async function handleInteraction(data) {
   var interaction = Interaction(data, { api, con })
   switch (interaction.type) {
     case 2:
@@ -20,8 +47,8 @@ con.on("INTERACTION_CREATE", async data => {
       cmd.default(interaction, options, { api, con, addComponentListener, addModalListener })
       break;
     case 3:
-      
-      componentListeners.forEach((h,v) => {
+
+      componentListeners.forEach((h, v) => {
         if (h.message_id == interaction.message.id && h.component_id == interaction.data.custom_id) {
           if (h.ttl !== Infinity) {
             clearTimeout(h.ttlTimeout)
@@ -48,7 +75,7 @@ con.on("INTERACTION_CREATE", async data => {
       })
       break;
   }
-})
+}
 function addComponentListener(message_id, component_id, listener, { ttl = 60000, onRemove = () => { } } = {}) {
   var ttlTimeout = null;
   if (ttl !== Infinity)  {

@@ -5,6 +5,8 @@ export default async function (interaction, { options }, { addComponentListener 
 	var results = (await (await fetch(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(options.term)}`)).json()).list
 	if (results.length == 0) interaction.editOriginal({ content: "No definitions are found" })
 	var index = 0
+	var page = 0
+	var pageLimit = Infinity
 	var msg_id = ""
 	var disableComponents = false
 	function updateMsg() {
@@ -32,7 +34,7 @@ export default async function (interaction, { options }, { addComponentListener 
 						label: "Next Definition",
 						custom_id: "next",
 						emoji: { id: null, animated: false, name: "\u23e9" },
-						disabled: index == results.length - 1 || disableComponents
+						disabled: (index == results.length - 1 && page > pageLimit) || disableComponents
 					}
 				]
 			}]
@@ -47,9 +49,17 @@ export default async function (interaction, { options }, { addComponentListener 
 	}, {
 		onRemove: () => { disableComponents = true; interaction.editOriginal(updateMsg()) }
 	})
-	addComponentListener(msg_id, "next", i => {
+	addComponentListener(msg_id, "next", async i => {
 		index++
-		if(index >= results.length) return index = results.length - 1
+		if (index >= results.length) {
+			await i.respond(6)
+			page++
+			var newDefs = (await(await fetch(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(options.term)}&page=${page}`)).json()).list
+			results = results.concat(newDefs)
+			if(newDefs.length == 0) pageLimit = --page
+			index++
+			return interaction.editOriginal(updateMsg())
+		}
 		i.respond(7, updateMsg())
 	})
 }
