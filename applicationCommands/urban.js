@@ -56,7 +56,10 @@ export default async function (interaction, { options }, { addComponentListener 
 			page++
 			var newDefs = (await(await fetch(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(options.term)}&page=${page}`)).json()).list
 			results = results.concat(newDefs)
-			if(newDefs.length == 0) pageLimit = --page
+			if (newDefs.length == 0) {
+				pageLimit = --page
+				index--
+			}
 			index++
 			return interaction.editOriginal(updateMsg())
 		}
