@@ -46,7 +46,8 @@ export default async function (interaction, { options }, { addComponentListener 
 		if(index < 0) return index = 0
 		i.respond(7, updateMsg())
 	}, {
-		onRemove: () => { console.log("delete"); disableComponents = true; interaction.editOriginal(updateMsg()) }
+		onRemove: () => { disableComponents = true; interaction.editOriginal(updateMsg()) },
+		linkTimers: [[msg_id, "next"]]
 	})
 	addComponentListener(msg_id, "next", async i => {
 		index++
@@ -60,6 +61,8 @@ export default async function (interaction, { options }, { addComponentListener 
 			return interaction.editOriginal(updateMsg())
 		}
 		i.respond(7, updateMsg())
+	}, {
+		linkTimers: [[msg_id,"previous"]]
 	})
 }
 function splitWords(str, splitLength) {
