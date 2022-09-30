@@ -27,7 +27,7 @@ if (USE_ENDPOINT_URL) {
       const signature = req.get('X-Signature-Ed25519');
       const timestamp = req.get('X-Signature-Timestamp');
       var verified = nacl.sign.detached.verify(
-        Buffer.from(Buffer.concat([timestamp, buf])),
+        Buffer.from(Buffer.concat([Buffer.from(timestamp), buf])),
         Buffer.from(signature, "hex"),
         Buffer.from(publicKey, "hex")
       )
@@ -41,7 +41,7 @@ if (USE_ENDPOINT_URL) {
   app.post("/", (req, res) => {
      // Verify the contents
     console.log(req.body)
-    var interaction = Interaction(JSON.stringify(req.body))
+    
   })
   app.get("/", (req, res) => res.json(200, console.log, console.log))
   app.listen(port, () => console.log("Listenening on "+ port))
@@ -49,9 +49,11 @@ if (USE_ENDPOINT_URL) {
   con.on("INTERACTION_CREATE", handleInteraction)
 }
 
-async function handleInteraction(data) {
-  var interaction = Interaction(data, { api, con })
+async function handleInteraction(data, res) {
+  var interaction = Interaction(data, { api, con, res })
   switch (interaction.type) {
+    case 1:
+      interaction.respond(1)
     case 2:
       var options = {};
       options = parseCommandOptions(interaction.data.options == undefined ? [] : interaction.data.options, interaction.data.resolved);
