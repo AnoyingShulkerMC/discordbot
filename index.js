@@ -56,7 +56,11 @@ async function handleInteraction(data, res) {
       var options = {};
       options = parseCommandOptions(interaction.data.options == undefined ? [] : interaction.data.options, interaction.data.resolved);
       var cmd = await import(`./applicationCommands/${interaction.data.name}.js`)
-      cmd.default(interaction, options, { api, con, addComponentListener, addModalListener })
+      try {
+        cmd.default(interaction, options, { api, con, addComponentListener, addModalListener })
+      } catch (e) {
+        log.write("[ERROR]   " + e.stack+ "\n")
+      }
       break;
     case 3:
       console.log(componentListeners)
