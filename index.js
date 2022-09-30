@@ -23,7 +23,6 @@ if (USE_ENDPOINT_URL) {
   const app = express()
   app.use(express.json({
     verify(req, res, buf) {
-      console.log(buf)
       const signature = req.get('X-Signature-Ed25519');
       const timestamp = req.get('X-Signature-Timestamp');
       var verified = nacl.sign.detached.verify(
