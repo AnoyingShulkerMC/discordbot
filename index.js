@@ -59,15 +59,17 @@ async function handleInteraction(data, res) {
       cmd.default(interaction, options, { api, con, addComponentListener, addModalListener })
       break;
     case 3:
+      console.log(componentListeners)
       if (componentListeners[interaction.message.id] && componentListeners[interaction.message.id][interaction.data.custom_id]) {
         var component = componentListeners[interaction.message.id][interaction.data.custom_id]
-        component.listener()
+        component.listener(interaction)
         if (component.ttl !== Infinity) {
-          ttlTimeout = setTimeout(() => {
+          component.ttlTimeout = setTimeout(() => {
             component.onRemove()
             delete componentListeners[interaction.message.id][interaction.data.custom_id]
           }, component.ttl).unref()
         }
+        componentListeners[interaction.message.id][interaction.data.custom_id] = component
       }
       break;
     case 4:
