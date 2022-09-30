@@ -40,8 +40,7 @@ if (USE_ENDPOINT_URL) {
   }))
   app.post("/", (req, res) => {
      // Verify the contents
-    console.log(req.body)
-    
+    handleInteraction(req.body, res)
   })
   app.get("/", (req, res) => res.json(200, console.log, console.log))
   app.listen(port, () => console.log("Listenening on "+ port))
