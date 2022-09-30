@@ -60,7 +60,6 @@ export default async function (interaction, { options }, { addComponentListener 
 				pageLimit = --page
 				index--
 			}
-			index++
 			return interaction.editOriginal(updateMsg())
 		}
 		i.respond(7, updateMsg())
