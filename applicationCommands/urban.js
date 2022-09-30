@@ -34,7 +34,7 @@ export default async function (interaction, { options }, { addComponentListener 
 						label: "Next Definition",
 						custom_id: "next",
 						emoji: { id: null, animated: false, name: "\u23e9" },
-						disabled: (index == results.length - 1 && page > pageLimit) || disableComponents
+						disabled: (index == results.length - 1 && page >= pageLimit) || disableComponents
 					}
 				]
 			}]
