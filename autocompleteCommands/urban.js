@@ -1,6 +1,5 @@
 import fetch from "node-fetch"
 export default async function (interaction, { options}) {
-  console.log(options)
   var results = (await(await fetch(`https://api.urbandictionary.com/v0/autocomplete-extra?term=${options.term}`)).json()).results
   var choices = []
   for (var i = 0; i < results.length; i++) {

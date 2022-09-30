@@ -41,7 +41,6 @@ export default async function (interaction, { options }, { addComponentListener 
 		}
 	}
 	msg_id = (await interaction.editOriginal(updateMsg())).id
-	console.log(msg_id)
 	addComponentListener(msg_id, "previous", i => {
 		index--
 		if(index < 0) return index = 0

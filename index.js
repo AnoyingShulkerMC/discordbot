@@ -30,7 +30,6 @@ if (USE_ENDPOINT_URL) {
         Buffer.from(signature, "hex"),
         Buffer.from(publicKey, "hex")
       )
-      console.log(verified)
       if (!verified) {
         res.status(401).end("invalid req signature")
         throw new Error("bad request sig")
