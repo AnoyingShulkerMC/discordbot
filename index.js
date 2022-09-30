@@ -53,6 +53,7 @@ async function handleInteraction(data, res) {
   switch (interaction.type) {
     case 1:
       interaction.respond(1)
+      break
     case 2:
       var options = {};
       options = parseCommandOptions(interaction.data.options == undefined ? [] : interaction.data.options, interaction.data.resolved);
