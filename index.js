@@ -65,7 +65,6 @@ async function handleInteraction(data, res) {
       }
       break;
     case 3:
-      console.log(componentListeners)
       if (componentListeners[interaction.message.id] && componentListeners[interaction.message.id][interaction.data.custom_id]) {
         var component = componentListeners[interaction.message.id][interaction.data.custom_id]
         component.listener(interaction)
