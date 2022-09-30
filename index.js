@@ -1,13 +1,17 @@
 import GatewayConnection from "./lib/GatewayConnection.js"
 import APIManager from "./lib/APIManager.js"
 import Interaction from "./lib/types/Interaction.js"
+
 import { createWriteStream } from "node:fs"
 import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
+
 import express from "express"
 import nacl from "tweetnacl"
-const publicKey = (await import("./pubkey.js")).default 
-const token = (await import("./token.js")).default
+
+
+const publicKey = process.env.PUBKEY
+const token = process.env.TOKEN
 const api = new APIManager(token)
 const con = new GatewayConnection(token, { intents: [GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS] })
 const log = createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`))
@@ -17,21 +21,29 @@ var componentListeners = []
 var modalListeners = []
 if (USE_ENDPOINT_URL) {
   const app = express()
-  app.use(express.raw({type: "*/*"}))
-  app.get("/", (req, res) => {
-     // Verify the contents
-    const signature = req.get('X-Signature-Ed25519');
-    const timestamp = req.get('X-Signature-Timestamp');
-    var verified = nacl.sign.detached.verify(
-      Buffer.from(Buffer.concat([timestamp, body])),
-      Buffer.from(signature, "hex"),
-      Buffer.from(publicKey, "hex")
-    )
-    console.log(verified)
-    if (!verified) {
-      return res.status(401).end("invalid req signature")
+  app.use(express.json({
+    verify(req, res, buf) {
+      console.log(buf)
+      const signature = req.get('X-Signature-Ed25519');
+      const timestamp = req.get('X-Signature-Timestamp');
+      var verified = nacl.sign.detached.verify(
+        Buffer.from(Buffer.concat([timestamp, buf])),
+        Buffer.from(signature, "hex"),
+        Buffer.from(publicKey, "hex")
+      )
+      console.log(verified)
+      if (!verified) {
+        res.status(401).end("invalid req signature")
+        throw new Error("bad request sig")
+      }
     }
+  }))
+  app.post("/", (req, res) => {
+     // Verify the contents
+    console.log(req.body)
+    var interaction = Interaction(JSON.stringify(req.body))
   })
+  app.get("/", (req, res) => res.json(200, console.log, console.log))
   app.listen(port, () => console.log("Listenening on "+ port))
 } else {
   con.on("INTERACTION_CREATE", handleInteraction)

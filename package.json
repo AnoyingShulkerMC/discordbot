@@ -9,5 +9,8 @@
     "mime": "^3.0.0",
     "node-fetch": "^3.2.10",
     "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3"
   }
 }
