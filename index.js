@@ -9,17 +9,19 @@ import { fileURLToPath } from "node:url"
 import express from "express"
 import nacl from "tweetnacl"
 
+const logFiles = false
+const useEndpointURL = true
 
 const publicKey = process.env.PUBKEY
 const token = process.env.TOKEN
 const api = new APIManager(token)
 const con = new GatewayConnection(token, { intents: [GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS] })
-const log = createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`))
-const USE_ENDPOINT_URL = true
+const log = logFiles ? createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)) : {write: console.log}
+
 var port = process.env.PORT || 8080
 var componentListeners = {}
 var modalListeners = []
-if (USE_ENDPOINT_URL) {
+if (useEndpointURL) {
   const app = express()
   app.use(express.json({
     verify(req, res, buf) {
