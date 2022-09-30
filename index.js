@@ -64,6 +64,15 @@ async function handleInteraction(data, res) {
         var component = componentListeners[interaction.message.id][interaction.data.custom_id]
         component.listener(interaction)
         if (component.ttl !== Infinity) {
+          clearTimeout(component.ttlTimeout)
+          component.linkTimers.forEach(a => {
+            var addComponent = componentListeners[a[0]][a[1]]
+            clearTimeout(addComponent.ttlTimeout)
+            addComponent.ttlTimeout = component.ttlTimeout = setTimeout(() => {
+              addComponent.onRemove()
+              delete componentListeners[a[0]][a[1]]
+            }, addComponent.ttl).unref()
+          })
           component.ttlTimeout = setTimeout(() => {
             component.onRemove()
             delete componentListeners[interaction.message.id][interaction.data.custom_id]
@@ -96,7 +105,7 @@ function addComponentListener(message_id, component_id, listener, { ttl = 60000,
     }, ttl).unref()
   }
   componentListeners[message_id] = componentListeners[message_id] || {}
-  componentListeners[message_id][component_id] = { listener, ttlTimeout, ttl, onRemove }
+  componentListeners[message_id][component_id] = { listener, ttlTimeout, ttl, onRemove, linkTimers }
 }
 function addModalListener(component_id, listener) {
   modalListeners.push({ component_id, listener })

@@ -46,7 +46,7 @@ export default async function (interaction, { options }, { addComponentListener 
 		if(index < 0) return index = 0
 		i.respond(7, updateMsg())
 	}, {
-		onRemove: () => { disableComponents = true; interaction.editOriginal(updateMsg()) }
+		onRemove: () => { console.log("delete"); disableComponents = true; interaction.editOriginal(updateMsg()) }
 	})
 	addComponentListener(msg_id, "next", async i => {
 		index++
