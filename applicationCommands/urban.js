@@ -5,7 +5,7 @@ export default async function (interaction, { options }, { addComponentListener 
 	var results = (await (await fetch(`https://api.urbandictionary.com/v0/define?term=${encodeURIComponent(options.term)}`)).json()).list
 	if (results.length == 0) interaction.editOriginal({ content: "No definitions are found" })
 	var index = 0
-	var page = 0
+	var page = 1
 	var pageLimit = Infinity
 	var msg_id = ""
 	var disableComponents = false
