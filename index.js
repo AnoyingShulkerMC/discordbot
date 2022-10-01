@@ -15,7 +15,9 @@ const useEndpointURL = true
 const publicKey = process.env.PUBKEY
 const token = process.env.TOKEN
 const api = new APIManager(token)
-const con = new GatewayConnection(token, { intents: [GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS] })
+const con = new GatewayConnection(token, {
+  intents: [GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS]
+})
 const log = logFiles ? createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)) : {write: console.log}
 
 var port = process.env.PORT || 8080
@@ -47,7 +49,17 @@ if (useEndpointURL) {
 } else {
   con.on("INTERACTION_CREATE", handleInteraction)
 }
-
+con.on("READY", d => {
+  con.setPresence({
+    status: "online",
+    activities: [{
+      type: 0,
+      name: process.env.PRESENCE || `with ${d.guilds.length} servers`
+    }],
+    afk: false,
+    since: null
+  })
+})
 async function handleInteraction(data, res) {
   var interaction = Interaction(data, { api, con, res })
   switch (interaction.type) {
