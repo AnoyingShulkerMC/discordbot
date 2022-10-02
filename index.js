@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url"
 
 import express from "express"
 import nacl from "tweetnacl"
+import GuildManager from "./lib/cache/GuildManager.js"
 
 const logFiles = false
 const useEndpointURL = true
@@ -20,7 +21,7 @@ const con = new GatewayConnection(token, {
   showSensitiveData: false
 })
 const log = logFiles ? createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)) : {write: console.log}
-
+const guilds = new GuildManager(con, api)
 var port = process.env.PORT || 8080
 var componentListeners = {}
 var modalListeners = []
@@ -72,9 +73,9 @@ async function handleInteraction(data, res) {
       options = parseCommandOptions(interaction.data.options == undefined ? [] : interaction.data.options, interaction.data.resolved);
       var cmd = await import(`./applicationCommands/${interaction.data.name}.js`)
       try {
-        cmd.default(interaction, options, { api, con, addComponentListener, addModalListener })
+        cmd.default(interaction, options, { api, con, addComponentListener, addModalListener, guilds })
       } catch (e) {
-        log.write("[ERROR]   " + e.stack+ "\n")
+        log.write("[ERROR]   " + e.toString()+ "\n")
       }
       break;
     case 3:
