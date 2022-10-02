@@ -1,4 +1,5 @@
 import APIManager from "../lib/APIManager.js"
+import utils from "node:util"
 const token = process.env.TOKEN
 var api = new APIManager(token)
 api.sendRequest({
