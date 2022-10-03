@@ -61,7 +61,7 @@ con.on("READY", d => {
     afk: false,
     since: null
   })
-  readdirSync(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)).forEach(f => (await import(`./startup/${f}`)).default({api, con, guilds}))
+  readdirSync(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)).forEach(async f => (await import(`./startup/${f}`)).default({api, con, guilds}))
 })
 async function handleInteraction(data, res) {
   var interaction = Interaction(data, { api, con, res })
