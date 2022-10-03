@@ -1,7 +1,7 @@
 import Database from "@replit/database"
-import APIManager from "../lib/APIManager"
-import GuildManager from "../lib/cache/GuildManager"
-import GatewayConnection from "../lib/GatewayConnection"
+import APIManager from "../lib/APIManager.js"
+import GuildManager from "../lib/cache/GuildManager.js"
+import GatewayConnection from "../lib/GatewayConnection.js"
 /**
  * 
  * @param {Object} context
