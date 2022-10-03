@@ -14,7 +14,7 @@ export default async function ({ api, con, guilds }) {
 	for (var [item, guild] of guilds.items) {
 		var reactRoles = JSON.stringify(db.get(item)).reactRoles
 		for (i of reactRoles) {
-			con.on("MESSAGE_REACTION_ADD", (react) => {
+			con.on("MESSAGE_REACTION_ADD", async (react) => {
 				if (react.message_id !== i.msg_id) return
 				if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
 				var role = await guild.roles.get(i.role)
