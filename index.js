@@ -2,7 +2,7 @@ import GatewayConnection from "./lib/GatewayConnection.js"
 import APIManager from "./lib/APIManager.js"
 import Interaction from "./lib/types/Interaction.js"
 
-import { createWriteStream } from "node:fs"
+import { createWriteStream, readdirSync } from "node:fs"
 import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -61,6 +61,7 @@ con.on("READY", d => {
     afk: false,
     since: null
   })
+  readdirSync(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)).forEach(f => (await import(`./startup/${f}`)).default({api, con, guilds}))
 })
 async function handleInteraction(data, res) {
   var interaction = Interaction(data, { api, con, res })
