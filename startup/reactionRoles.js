@@ -12,7 +12,7 @@ import GatewayConnection from "../lib/GatewayConnection.js"
 export default async function ({ api, con, guilds }) {
 	var db = new Database()
 	for (var [item, guild] of guilds.items) {
-		var reactRoles = JSON.stringify(db.get(item)).reactRoles
+		var reactRoles = JSON.stringify(db.get(item)).reactRoles || []
 		for (i of reactRoles) {
 			con.on("MESSAGE_REACTION_ADD", async (react) => {
 				if (react.message_id !== i.msg_id) return
