@@ -33,6 +33,21 @@ export default async function ({ api, con, guilds }) {
 						method: "PUT"
 					})
 				})
+				con.on("MESSAGE_REACTION_REMOVE", async (react) => {
+					console.log(react, i)
+					if (react.message_id !== i.msg_id) return
+					if (react.guild_id !== guild.id) return
+					console.log(react.emoji.name, i.name, react.emoji.id, i.id)
+					if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
+					var role = await guild.roles.get(i.role)
+					var member = (await guild.members.get(con.applicationID))
+					var highestRole = member.roles.map(a => guild.roles.items.get(a)).sort((a, b) => b.position - a.position)[0]
+					if (!(member.permissions & (1 << 28)) || role.position >= highestRole.position) return
+					api.sendRequest({
+						endpoint: `/guilds/${guild.id}/members/${react.user_id}/roles/${i.role}`,
+						method: "DELETE"
+					})
+				})
 			}
 		} catch (e) { console.log(e) }
 	}
