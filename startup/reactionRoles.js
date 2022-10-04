@@ -13,7 +13,7 @@ import GatewayConnection from "../lib/GatewayConnection.js"
 export default async function ({ api, con, guilds }) {
 	await sleep(1000) // Wait for guilds to resolve
 	var db = new Database()
-	db.set("713917232580919376", JSON.stringify({ reactRoles: [{ role: "730168714313596929", msg_id: "1023638692268613652", guild_id: "713917232580919376", emoji: { name: "true", id: "866138928959717377" } }] })).then(() => { });
+	db.set("713917232580919376", JSON.stringify({ reactRoles: [{ role: "730168714313596929", msg_id: "1023638692268613652", guild_id: "713917232580919376", name: "true", id: "866138928959717377"  }] })).then(() => { });
 	for (var [item, guild] of guilds.items) {
 		try {
 			var reactRoles = JSON.parse(await db.get(item)).reactRoles || []
