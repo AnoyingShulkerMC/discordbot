@@ -22,6 +22,7 @@ export default async function ({ api, con, guilds }) {
 					console.log(react, i)
 					if (react.message_id !== i.msg_id) return
 					if (react.guild_id !== guild.id) return
+					console.log(react.emoji.name, i.name, react.emoji.id, i.id)
 					if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
 					var role = await guild.roles.get(i.role)
 					var member = (await guild.members.get(con.applicationID))
