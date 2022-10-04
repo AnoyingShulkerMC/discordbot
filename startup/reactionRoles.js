@@ -19,8 +19,9 @@ export default async function ({ api, con, guilds }) {
 			var reactRoles = JSON.parse(await db.get(item)).reactRoles || []
 			for (var i of reactRoles) {
 				con.on("MESSAGE_REACTION_ADD", async (react) => {
+					console.log(react, i)
 					if (react.message_id !== i.msg_id) return
-					if (react.guild_id !== i.guild_id) return
+					if (react.guild_id !== guild.id) return
 					if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
 					var role = await guild.roles.get(i.role)
 					var member = (await guild.members.get(con.applicationID))
