@@ -34,7 +34,7 @@ export default async function ({ api, con, guilds }) {
 					})
 				})
 				con.on("MESSAGE_REACTION_REMOVE", async (react) => {
-					console.log(react, i)
+					console.log(react, i, guild.id)
 					if (react.message_id !== i.msg_id) return
 					if (react.guild_id !== guild.id) return
 					console.log(react.emoji.name, i.name, react.emoji.id, i.id)
