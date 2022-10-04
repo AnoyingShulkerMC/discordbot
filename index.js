@@ -17,7 +17,7 @@ const publicKey = process.env.PUBKEY
 const token = process.env.TOKEN
 const api = new APIManager(token)
 const con = new GatewayConnection(token, {
-  intents: [GatewayConnection.INTENT_FLAGS.GUILDS],
+  intents: [GatewayConnection.INTENT_FLAGS.GUILDS, GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS],
   showSensitiveData: false
 })
 const log = logFiles ? createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)) : {write: console.log}
