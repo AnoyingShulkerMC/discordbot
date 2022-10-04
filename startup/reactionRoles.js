@@ -19,10 +19,8 @@ export default async function ({ api, con, guilds }) {
 			var reactRoles = JSON.parse(await db.get(item)).reactRoles || []
 			for (var i of reactRoles) {
 				con.on("MESSAGE_REACTION_ADD", async (react) => {
-					console.log(react, i)
 					if (react.message_id !== i.msg_id) return
 					if (react.guild_id !== guild.id) return
-					console.log(react.emoji.name, i.name, react.emoji.id, i.id)
 					if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
 					var role = await guild.roles.get(i.role)
 					var member = (await guild.members.get(con.applicationID))
@@ -30,23 +28,26 @@ export default async function ({ api, con, guilds }) {
 					if (!(member.permissions & (1 << 28)) || role.position >= highestRole.position) return
 					api.sendRequest({
 						endpoint: `/guilds/${guild.id}/members/${react.user_id}/roles/${i.role}`,
-						method: "PUT"
+						method: "PUT",
+						additionalHeaders: {
+							"x-audit-log-reason": `Reaction Role for MessageID ${react.message_id}`
+						}
 					})
 				})
-				con.on("MESSAGE_REACTION_REMOVE", async (react) => {
-					console.log(react, i, guild.id)
+				con.on("MESSAGE_REACTION_REMOVE", async (react) => { 
 					if (react.message_id !== i.msg_id) return
 					if (react.guild_id !== guild.id) return
-					console.log(react.emoji.name, i.name, react.emoji.id, i.id)
 					if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
 					var role = await guild.roles.get(i.role)
 					var member = (await guild.members.get(con.applicationID))
 					var highestRole = member.roles.map(a => guild.roles.items.get(a)).sort((a, b) => b.position - a.position)[0]
-					console.log(member, highestRole)
 					if (!(member.permissions & (1 << 28)) || role.position >= highestRole.position) return
 					api.sendRequest({
 						endpoint: `/guilds/${guild.id}/members/${react.user_id}/roles/${i.role}`,
-						method: "DELETE"
+						method: "DELETE",
+						additionalHeaders: {
+							"x-audit-log-reason": `Reaction Role for MessageID ${react.message_id}`
+						}
 					})
 				})
 			}
