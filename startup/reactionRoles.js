@@ -21,6 +21,7 @@ export default async function ({ api, con, guilds }) {
 		for (var i of reactRoles) {
 			if (react.message_id !== i.msgID) continue
 			if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
+			var guild = await guilds.get(react.guild_id)
 			var role = await guild.roles.get(i.role)
 			var member = (await guild.members.get(con.applicationID))
 			var highestRole = member.roles.map(a => guild.roles.items.get(a)).sort((a, b) => b.position - a.position)[0]
