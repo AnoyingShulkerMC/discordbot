@@ -15,9 +15,11 @@ export default async function ({ api, con, guilds }) {
 	var db = new Database()
 	db.set("713917232580919376", JSON.stringify({ reactRoles: [ { msgID: "1023638692268613652", role: "730168714313596929", name: "true", id: "866138928959717377" }] })).then(() => { });
 	con.on("MESSAGE_REACTION_ADD", async (react) => {
-		var dbEntry = db.get(react.guild_id).reactRoles
-		for (var i of Object.entries(dbEntry)) {
-			if (react.message_id !== msgID) continue
+		var dbEntry = (await db.get(react.guild_id))
+		if (dbEntry == null) return
+		var reactRoles = dbEntry.reactRoles
+		for (var i of reactRoles) {
+			if (react.message_id !== i.msgID) continue
 			if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
 			var role = await guild.roles.get(i.role)
 			var member = (await guild.members.get(con.applicationID))
@@ -25,7 +27,7 @@ export default async function ({ api, con, guilds }) {
 			if (!(member.permissions & (1 << 28)) || role.position >= highestRole.position) return
 			api.sendRequest({
 				endpoint: `/guilds/${guild.id}/members/${react.user_id}/roles/${i.role}`,
-				method: "PUT",
+				method: "DELETE",
 				additionalHeaders: {
 					"x-audit-log-reason": `Reaction Role for MessageID ${react.message_id}`
 				}
@@ -37,8 +39,8 @@ export default async function ({ api, con, guilds }) {
 		var dbEntry = (await db.get(react.guild_id))
 		if(dbEntry == null) return
 		var reactRoles = dbEntry.reactRoles
-		for (var i of dbEntry) {
-			if (react.message_id !== msgID) continue
+		for (var i of reactRoles) {
+			if (react.message_id !== i.msgID) continue
 			if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
 			var role = await guild.roles.get(i.role)
 			var member = (await guild.members.get(con.applicationID))
