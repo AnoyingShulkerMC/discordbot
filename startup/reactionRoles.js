@@ -28,7 +28,7 @@ export default async function ({ api, con, guilds }) {
 			if (!(member.permissions & (1 << 28)) || role.position >= highestRole.position) return
 			api.sendRequest({
 				endpoint: `/guilds/${guild.id}/members/${react.user_id}/roles/${i.role}`,
-				method: "DELETE",
+				method: "PATCH",
 				additionalHeaders: {
 					"x-audit-log-reason": `Reaction Role for MessageID ${react.message_id}`
 				}
