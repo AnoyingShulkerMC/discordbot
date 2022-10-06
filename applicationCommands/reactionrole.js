@@ -8,9 +8,10 @@ export default async function (interaction, options, { api, con }) {
   if (options.subCmdInvoked = "set") {
     if (!messageURLRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
     if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
-    var guildID = options.options.message.matchAll(messageURLRegex)[1]
-    var channelID = options.options.message.matchAll(messageURLRegex)[2]
-    var msgID = options.options.message.matchAll(messageURLRegex)[3]
+    var matches = [...options.options.message.matchAll(messageURLRegex)]
+    var guildID = matches[1]
+    var channelID = matches[2]
+    var msgID = matches[3]
     var emoji = getEmoji(options.options.emoji)
     var guildData = await db.get(interaction.guild_id) || {}
     guildData.reactRoles = guildData.reactRoles || []
