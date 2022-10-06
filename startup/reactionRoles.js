@@ -15,6 +15,7 @@ export default async function ({ api, con, guilds }) {
 	var db = new Database()
 	db.set("713917232580919376", { reactRoles: [ { msgID: "1023638692268613652", role: "730168714313596929", name: "true", id: "866138928959717377" }] }).then(() => { });
 	con.on("MESSAGE_REACTION_ADD", async (react) => {
+		if (react.user_id == con.applicationID) return;
 		var dbEntry = await db.get(react.guild_id)
 		if (dbEntry == null || dbEntry.reactRoles == undefined) return
 		var reactRoles = dbEntry.reactRoles
@@ -36,6 +37,7 @@ export default async function ({ api, con, guilds }) {
 		}
 	})
 	con.on("MESSAGE_REACTION_REMOVE", async (react) => { 
+		if (react.user_id == con.applicationID) return;
 		var dbEntry = await db.get(react.guild_id)
 		if (dbEntry == null || dbEntry.reactRoles == undefined) return
 		var reactRoles = dbEntry.reactRoles
