@@ -50,7 +50,7 @@ export default async function (interaction, options, { api, con, guilds }) {
     try {
       await api.sendRequest({
         endpoint: `/channels/${channelID}/messages/${msgID}/reactions/${emoji.id ? `${emoji.name}%3A${emoji.id}` : encodeURIComponent(emoji.name)}/@me`,
-        method: "PUT"
+        method: "DELETE"
       })
     } catch {}
   }
