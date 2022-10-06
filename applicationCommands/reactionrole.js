@@ -11,19 +11,20 @@ export default async function (interaction, options, { api, con }) {
     var guildID = options.options.message.matchAll()[1]
     var channelID = options.options.message.matchAll()[2]
     var msgID = options.options.message.matchAll()[3]
-    
+    var emoji = getEmoji(options.options.emoji)
     var guildData = await db.get(interaction.guild_id) || {}
     guildData.reactRoles = guildData.reactRoles || []
-    guildData.reactRoles = guildData.reactRoles.filter(a => a.msgID !== options.options.message && a.id !== getEmoji(options.options.emoji).id && a.name !== getEmoji(options.options.emoji).name)
+    guildData.reactRoles = guildData.reactRoles.filter(a => a.msgID !== options.options.message && a.id !== emoji.id && a.name !== emoji.name)
     guildData.reactRoles.push({
       msgID,
       role: options.options.role.id,
-      ...getEmoji(options.options.emoji)
+      ...emoji
     })
     db.set(interaction.guild_id, guildData)
     interaction.respond(4, { content: "Done!" })
     api.sendRequest({
-      endpoint: `/`
+      endpoint: `/channels/${channelID}/messages/${msgID}/reactions/${emoji.id ? `${emoji.name}%3A${emoji.id}` : encodeURIComponent(emoji.name)}/@me`,
+      method: "PUT"
     })
   }
 }
