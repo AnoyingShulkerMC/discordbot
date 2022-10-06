@@ -9,6 +9,7 @@ export default async function (interaction, options, { api, con }) {
     if (!messageURLRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
     if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
     var matches = [...options.options.message.matchAll(messageURLRegex)]
+    console.log(matches)
     var guildID = matches[1]
     var channelID = matches[2]
     var msgID = matches[3]
