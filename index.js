@@ -72,6 +72,7 @@ async function handleInteraction(data, res) {
       break
     case 2:
       var options = {};
+      console.log(interaction.data)
       options = parseCommandOptions(interaction.data.options == undefined ? [] : interaction.data.options, interaction.data.resolved);
       var cmd = await import(`./applicationCommands/${interaction.data.name}.js`)
       try {
@@ -178,7 +179,7 @@ function parseCommandOptions(options, resolved) {
         options1[option.name] = resolved.roles[option.value]
         break
       case 9:
-        options1[option.name] = resolved.users ? resolved.users[option.value] : resolved.roles[option.value]
+        options1[option.name] = resolved.users[option.value] ? resolved.users[option.value] : resolved.roles[option.value]
         break
       case 10:
         options1[option.name] = option.value
