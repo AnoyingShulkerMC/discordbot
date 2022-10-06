@@ -44,7 +44,8 @@ export default async function (interaction, options, { api, con, guilds }) {
     var channelID = matches[2]
     if (!await (await guilds.get(interaction.guild_id)).channels.get(channelID)) return interaction.respond(4, { content: "The channel is nonexistent" })
     var msgID = matches[3]
-    var guildData = await db.get(interaction.guild_id)
+    var guildData = await db.get(interaction.guild_id) || {}
+    guildData.reactRoles = guildData.reactRoles || []
     var emoji = getEmoji(options.options.emoji)
     guildData.reactRoles = guildData.reactRoles.filter(a => a.msgID !== options.options.message && a.id !== emoji.id && a.name !== emoji.name)
     db.set(interaction.guild_id, guildData)
