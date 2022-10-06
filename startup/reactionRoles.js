@@ -15,7 +15,7 @@ export default async function ({ api, con, guilds }) {
 	var db = new Database()
 	db.set("713917232580919376", { reactRoles: [ { msgID: "1023638692268613652", role: "730168714313596929", name: "true", id: "866138928959717377" }] }).then(() => { });
 	con.on("MESSAGE_REACTION_ADD", async (react) => {
-		var dbEntry = JSON.parse(await db.get(react.guild_id))
+		var dbEntry = await db.get(react.guild_id)
 		if (dbEntry == null || dbEntry.reactRoles == undefined) return
 		var reactRoles = dbEntry.reactRoles
 		for (var i of reactRoles) {
