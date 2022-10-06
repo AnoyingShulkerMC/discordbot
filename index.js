@@ -154,11 +154,11 @@ function parseCommandOptions(options, resolved) {
     switch (option.type) {
       case 1:
         subCmdInvoked = option.name
-        options = parseCommandOptions(option.options).options
+        options = parseCommandOptions(option.options, resolved).options
         break
       case 2:
         subCmdGroupInvoked = option.name
-        var result = parseCommandOptions()
+        var result = parseCommandOptions(option.options, resolved)
         subCmdInvoked = result.subCmdInvoked
       case 3:
         options1[option.name] = option.value
