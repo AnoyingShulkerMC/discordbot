@@ -8,6 +8,7 @@ export default async function (interaction, options, { api, con, guilds }) {
   messageURLRegex.lastIndex = 0
   console.log(options)
   if (options.subCmdInvoked == "set") {
+    console.log(emojiRegex.test(options.options.emoji))
     if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
     if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
     var matches = messageURLRegex.exec(options.options.message)
