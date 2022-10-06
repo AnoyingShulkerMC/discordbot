@@ -36,7 +36,7 @@ export default async function ({ api, con, guilds }) {
 		}
 	})
 	con.on("MESSAGE_REACTION_REMOVE", async (react) => { 
-		var dbEntry = JSON.parse(await db.get(react.guild_id))
+		var dbEntry = await db.get(react.guild_id)
 		if (dbEntry == null || dbEntry.reactRoles == undefined) return
 		var reactRoles = dbEntry.reactRoles
 		for (var i of reactRoles) {
