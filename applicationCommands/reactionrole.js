@@ -6,7 +6,7 @@ const messageURLRegex = /https:\/\/discord.com\/channels\/([0-9]+)\/([0-9]+)\/([
 export default async function (interaction, options, { api, con, guilds }) {
   var db = new Database()
   console.log(options)
-  if (options.subCmdInvoked = "set") {
+  if (options.subCmdInvoked == "set") {
     if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
     if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
     var matches = messageURLRegex.exec(options.options.message)
@@ -33,7 +33,7 @@ export default async function (interaction, options, { api, con, guilds }) {
         method: "PUT"
       })
     } catch { interaction.createFollowup({content: "The emoji is not available for me"}) }
-  } if (options.subCmdInvoked == "delete") {
+  } else if (options.subCmdInvoked == "remove") {
     if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
     if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
 
