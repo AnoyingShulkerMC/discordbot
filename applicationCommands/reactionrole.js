@@ -51,6 +51,7 @@ export default async function (interaction, options, { api, con, guilds }) {
     db.set(interaction.guild_id, guildData)
     interaction.respond(4, { content: "Done!" })
     try {
+      console.log("requesting")
       await api.sendRequest({
         endpoint: `/channels/${channelID}/messages/${msgID}/reactions/${emoji.id ? `${emoji.name}%3A${emoji.id}` : encodeURIComponent(emoji.name)}/@me`,
         method: "DELETE"
