@@ -17,7 +17,7 @@ api.sendRequest({
             type: 3,
             name: "message",
             required: true,
-            description: "The ID of the message. Obtain by enabling Developer Mode and right clicking the desired message."
+            description: "The link to the message."
           },
           {
             type: 8,

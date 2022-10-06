@@ -13,7 +13,7 @@ import GatewayConnection from "../lib/GatewayConnection.js"
 export default async function ({ api, con, guilds }) {
 	await sleep(1000) // Wait for guilds to resolve
 	var db = new Database()
-	db.set("713917232580919376", JSON.stringify({ reactRoles: [ { msgID: "1023638692268613652", role: "730168714313596929", name: "true", id: "866138928959717377" }] })).then(() => { });
+	db.set("713917232580919376", { reactRoles: [ { msgID: "1023638692268613652", role: "730168714313596929", name: "true", id: "866138928959717377" }] }).then(() => { });
 	con.on("MESSAGE_REACTION_ADD", async (react) => {
 		var dbEntry = JSON.parse(await db.get(react.guild_id))
 		if (dbEntry == null || dbEntry.reactRoles == undefined) return
