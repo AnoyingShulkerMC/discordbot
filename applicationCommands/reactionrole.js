@@ -36,7 +36,7 @@ export default async function (interaction, options, { api, con, guilds }) {
   } else if (options.subCmdInvoked == "remove") {
     if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
     if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
-
+    var matches = messageURLRegex.exec(options.options.message)
     var guildID = matches[1]
     if (guildID !== interaction.guild_id) return interaction.respond(4, { content: "The message must be in the same guild." })
     var channelID = matches[2]
