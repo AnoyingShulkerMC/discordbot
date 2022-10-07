@@ -11,8 +11,8 @@ import nacl from "tweetnacl"
 import Database from "@replit/database"
 import GuildManager from "./lib/cache/GuildManager.js"
 
-const logFiles = true
-const useEndpointURL = false
+const logFiles = false
+const useEndpointURL = true
 
 const publicKey = process.env.PUBKEY
 const token = process.env.TOKEN
