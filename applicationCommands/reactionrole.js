@@ -20,7 +20,7 @@ export default async function (interaction, options, { api, con, guilds, databas
     var emoji = getEmoji(options.options.emoji)
     var guildData = await database.get(interaction.guild_id) || {}
     guildData.reactRoles = guildData.reactRoles || []
-    guildData.reactRoles = guildData.reactRoles.filter(a => a.msgID !== options.options.message || a.id !== emoji.id || a.name !== emoji.name)
+    guildData.reactRoles = guildData.reactRoles.filter(a => a.msgID !== msgID || a.id !== emoji.id || a.name !== emoji.name)
     guildData.reactRoles.push({
       msgID,
       role: options.options.role.id,
