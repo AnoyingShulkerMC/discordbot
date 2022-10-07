@@ -19,7 +19,7 @@ export default async function ({ api, con, guilds, database }) {
 		var reactRoles = dbEntry.reactRoles
 		for (var i of reactRoles) {
 			if (react.message_id !== i.msgID) continue
-			if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
+			if (react.emoji.name !== i.name || react.emoji.id !== i.id) continue
 			var guild = await guilds.get(react.guild_id)
 			var role = await guild.roles.get(i.role)
 			var member = (await guild.members.get(con.applicationID))
@@ -41,7 +41,7 @@ export default async function ({ api, con, guilds, database }) {
 		var reactRoles = dbEntry.reactRoles
 		for (var i of reactRoles) {
 			if (react.message_id !== i.msgID) continue
-			if (react.emoji.name !== i.name || react.emoji.id !== i.id) return
+			if (react.emoji.name !== i.name || react.emoji.id !== i.id) continue
 			var guild = await guilds.get(react.guild_id)
 			var role = await guild.roles.get(i.role)
 			var member = (await guild.members.get(con.applicationID))
