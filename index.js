@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url"
 
 import express from "express"
 import nacl from "tweetnacl"
+import Database from "@replit/database"
 import GuildManager from "./lib/cache/GuildManager.js"
 
 const logFiles = false
@@ -20,8 +21,9 @@ const con = new GatewayConnection(token, {
   intents: [GatewayConnection.INTENT_FLAGS.GUILDS, GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS],
   showSensitiveData: false
 })
-const log = logFiles ? createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)) : {write: console.log}
+const log = logFiles ? createWriteStream(join(dirname(fileURLToPath(import.meta.url)), `./logs/${Date.now()}.log`)) : { write: console.log }
 const guilds = new GuildManager(con, api)
+const database = new Database("https://discordbotdb.salace2.repl.co/")
 var port = process.env.PORT || 8080
 var componentListeners = {}
 var modalListeners = []
@@ -43,11 +45,11 @@ if (useEndpointURL) {
     }
   }))
   app.post("/", (req, res) => {
-     // Verify the contents
+    // Verify the contents
     handleInteraction(req.body, res)
   })
   app.get("/", (req, res) => res.status(200).end("This is discord bot interaction endpoint."))
-  app.listen(port, () => console.log("Listenening on "+ port))
+  app.listen(port, () => console.log("Listenening on " + port))
 } else {
   con.on("INTERACTION_CREATE", handleInteraction)
 }
@@ -62,7 +64,7 @@ con.on("READY", d => {
     since: null
   })
 
-  readdirSync(join(dirname(fileURLToPath(import.meta.url)), `./startup`)).forEach(async f => (await import(`./startup/${f}`)).default({api, con, guilds}))
+  readdirSync(join(dirname(fileURLToPath(import.meta.url)), `./startup`)).forEach(async f => (await import(`./startup/${f}`)).default({ api, con, guilds, database }))
 })
 async function handleInteraction(data, res) {
   var interaction = Interaction(data, { api, con, res })
@@ -76,9 +78,9 @@ async function handleInteraction(data, res) {
       options = parseCommandOptions(interaction.data.options == undefined ? [] : interaction.data.options, interaction.data.resolved);
       var cmd = await import(`./applicationCommands/${interaction.data.name}.js`)
       try {
-        cmd.default(interaction, options, { api, con, addComponentListener, addModalListener, guilds })
+        cmd.default(interaction, options, { api, con, addComponentListener, addModalListener, guilds, database })
       } catch (e) {
-        log.write("[ERROR]   " + e.toString()+ "\n")
+        log.write("[ERROR]   " + e.toString() + "\n")
       }
       break;
     case 3:
@@ -107,7 +109,7 @@ async function handleInteraction(data, res) {
       var options = {}
       options = parseCommandOptions(interaction.data.options == undefined ? [] : interaction.data.options, interaction.data.resolved);
       var cmd = await import(`./autocompleteCommands/${interaction.data.name}.js`)
-      cmd.default(interaction, options, { api, con, addComponentListener, addModalListener })
+      cmd.default(interaction, options, { api, con, addComponentListener, addModalListener, database })
       break;
     case 5:
       modalListeners.forEach(h => {
@@ -120,7 +122,7 @@ async function handleInteraction(data, res) {
 }
 function addComponentListener(message_id, component_id, listener, { ttl = 60000, onRemove = () => { }, linkTimers = [] } = {}) {
   var ttlTimeout = null;
-  if (ttl !== Infinity)  {
+  if (ttl !== Infinity) {
     ttlTimeout = setTimeout(() => {
       onRemove()
       delete componentListeners[message_id][component_id]
@@ -137,7 +139,7 @@ function parseModalValues(components) {
   components.forEach(r => {
     switch (r.type) {
       case 1:
-        options = {...options, ...(parseModalValues(r.components))}
+        options = { ...options, ...(parseModalValues(r.components)) }
         break;
       case 4:
         options[r.custom_id] = r.value
@@ -190,7 +192,7 @@ function parseCommandOptions(options, resolved) {
         break
     }
   })
-  return {subCmdInvoked, subCmdGroupInvoked, options: options1}
+  return { subCmdInvoked, subCmdGroupInvoked, options: options1 }
 }
 con.on("debug", e => log.write("[GATEWAY] " + e + "\n"))
 api.on("debug", e => log.write("[API]     " + e + "\n"))

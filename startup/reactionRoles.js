@@ -10,12 +10,11 @@ import GatewayConnection from "../lib/GatewayConnection.js"
  * @param {APIManager} context.api
  * @param {GatewayConnection} context.con
  */
-export default async function ({ api, con, guilds }) {
+export default async function ({ api, con, guilds, database }) {
 	await sleep(1000) // Wait for guilds to resolve
-	var db = new Database()
 	con.on("MESSAGE_REACTION_ADD", async (react) => {
 		if (react.user_id == con.applicationID) return;
-		var dbEntry = await db.get(react.guild_id)
+		var dbEntry = await database.get(react.guild_id)
 		if (dbEntry == null || dbEntry.reactRoles == undefined) return
 		var reactRoles = dbEntry.reactRoles
 		for (var i of reactRoles) {
@@ -37,7 +36,7 @@ export default async function ({ api, con, guilds }) {
 	})
 	con.on("MESSAGE_REACTION_REMOVE", async (react) => { 
 		if (react.user_id == con.applicationID) return;
-		var dbEntry = await db.get(react.guild_id)
+		var dbEntry = await database.get(react.guild_id)
 		if (dbEntry == null || dbEntry.reactRoles == undefined) return
 		var reactRoles = dbEntry.reactRoles
 		for (var i of reactRoles) {
