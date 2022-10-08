@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url"
 import express from "express"
 import nacl from "tweetnacl"
 import Database from "@replit/database"
+import fetch from "node-fetch"
 import GuildManager from "./lib/cache/GuildManager.js"
 
 const logFiles = false
@@ -197,3 +198,6 @@ function parseCommandOptions(options, resolved) {
 con.on("debug", e => log.write("[GATEWAY] " + e + "\n"))
 api.on("debug", e => log.write("[API]     " + e + "\n"))
 con.connect()
+setInterval(() => {
+  fetch("https://discordBotDB.salace2.repl.co")
+}, 1800000)
