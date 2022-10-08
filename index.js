@@ -57,10 +57,16 @@ if (useEndpointURL) {
 con.on("READY", d => {
   con.setPresence({
     status: "online",
-    activities: [{
-      type: 0,
-      name: process.env.PRESENCE || `with ${d.guilds.length} servers`
-    }],
+    activities: [
+      {
+        type: 0,
+        name: process.env.PRESENCE || `with ${d.guilds.length} servers`
+      },
+      {
+        type: 0,
+        name: `Running since ${(new Date()).toDateString()}`
+      }
+    ],
     afk: false,
     since: null
   })
