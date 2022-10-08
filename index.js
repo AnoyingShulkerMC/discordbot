@@ -199,5 +199,6 @@ con.on("debug", e => log.write("[GATEWAY] " + e + "\n"))
 api.on("debug", e => log.write("[API]     " + e + "\n"))
 con.connect()
 setInterval(() => {
+  console.log("[KEEPLIV]")
   fetch("https://discordBotDB.salace2.repl.co")
 }, 1800000)
