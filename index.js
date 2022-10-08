@@ -62,7 +62,7 @@ con.on("READY", d => {
       name: process.env.PRESENCE || `with ${d.guilds.length} servers`
     }],
     afk: false,
-    since: null
+    since: Date.now()
   })
 
   readdirSync(join(dirname(fileURLToPath(import.meta.url)), `./startup`)).forEach(async f => (await import(`./startup/${f}`)).default({ api, con, guilds, database }))
