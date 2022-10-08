@@ -50,6 +50,7 @@ if (useEndpointURL) {
     handleInteraction(req.body, res)
   })
   app.get("/", (req, res) => res.status(200).end("This is discord bot interaction endpoint."))
+  app.head("/", (req, res) => res.status(200).end())
   app.listen(port, () => console.log("Listenening on " + port))
 } else {
   con.on("INTERACTION_CREATE", handleInteraction)
