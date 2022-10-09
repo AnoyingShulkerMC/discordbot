@@ -74,9 +74,9 @@ export default async function (interaction, options, { api, con, guilds, databas
         endpoint: `/channels/${channelID}/messages/${msgID}/reactions/${emoji.id ? `${emoji.name}%3A${emoji.id}` : encodeURIComponent(emoji.name)}?limit=100`,
         method: "GET"
       })).json()
-      var reactionRoles = guildData.reactionRoles || []
-      console.log(reactionRoles)
+      var reactionRoles = guildData.reactRoles || []
       var reactionRole = reactionRoles.find(a => a.msgID == msgID && a.id == emoji.id && a.name == emoji.name)
+      if(reactionRole == undefined) return interaction.respond("That reactionRole does not exist")
       for (var user of reactions) {
         api.sendRequest({
           endpoint: `/guilds/${guildID}/members/${user.id}/roles/${reactionRole.role}`,
