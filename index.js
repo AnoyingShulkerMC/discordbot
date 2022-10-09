@@ -204,4 +204,4 @@ con.connect()
 setInterval(() => {
   console.log("[KEEPLIV]")
   fetch("https://discordBotDB.salace2.repl.co")
-}, 1800000)
+}, 180000)
