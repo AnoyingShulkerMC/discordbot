@@ -75,6 +75,7 @@ export default async function (interaction, options, { api, con, guilds, databas
         method: "GET"
       })).json()
       var reactionRoles = guildData.reactionRoles || []
+      console.log(reactionRoles)
       var reactionRole = reactionRoles.find(a => a.msgID == msgID && a.id == emoji.id && a.name == emoji.name)
       for (var user of reactions) {
         api.sendRequest({
