@@ -61,7 +61,7 @@ con.on("READY", d => {
     activities: [
       {
         type: 0,
-        name: process.env.PRESENCE || `with ${d.guilds.length} servers. Running since ${(new Date()).toDateString()}`
+        name: process.env.PRESENCE || `with ${d.guilds.length} servers. Running since ${(new Date()).toLocaleString()}`
       }
     ],
     afk: false,
