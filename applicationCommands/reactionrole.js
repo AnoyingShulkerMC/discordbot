@@ -78,6 +78,7 @@ export default async function (interaction, options, { api, con, guilds, databas
       var reactionRole = reactionRoles.find(a => a.msgID == msgID && a.id == emoji.id && a.name == emoji.name)
       if(reactionRole == undefined) return interaction.respond("That reactionRole does not exist")
       for (var user of reactions) {
+        if(user.id == con.applicationID) continue 
         api.sendRequest({
           endpoint: `/guilds/${guildID}/members/${user.id}/roles/${reactionRole.role}`,
           method: "PUT",
