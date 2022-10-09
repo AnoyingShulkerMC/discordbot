@@ -85,7 +85,7 @@ export default async function (interaction, options, { api, con, guilds, databas
           }
         })
       }
-      interaction.respond("Done!")
+      interaction.respond(4, {content: "Done!"})
   }
 }
 function getEmoji(str) {
