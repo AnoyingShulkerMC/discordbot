@@ -51,6 +51,25 @@ api.sendRequest({
             description: "The emoji to trigger the role give."
           }
         ]
+      },
+      {
+        type: 1,
+        name: "reassign",
+        description: "Reassigns reaction roles given message",
+        options: [
+          {
+            type: 3,
+            name: "message",
+            required: true,
+            description: "The link to the message."
+          },
+          {
+            type: 3,
+            name: "emoji",
+            required: true,
+            description: "The emoji to trigger the role give."
+          }
+        ]
       }
     ]
   })
