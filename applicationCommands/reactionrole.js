@@ -82,7 +82,7 @@ export default async function (interaction, options, { api, con, guilds, databas
           endpoint: `/guilds/${guildID}/members/${user.id}/roles/${reactionRole.role}`,
           method: "PUT",
           additionalHeaders: {
-            "x-audit-log-reason": `Reaction Role for MessageID ${react.message_id}`
+            "x-audit-log-reason": `Reaction Role for MessageID ${msgID}`
           }
         })
       }
