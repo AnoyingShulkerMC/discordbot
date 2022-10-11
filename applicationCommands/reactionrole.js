@@ -1,5 +1,5 @@
 const emojiRegex = /^<a?:(.+):(\d+)>$/
-import isEmoji from "is-emoji"
+const unicodeEmojiRegex = /^[\u{1f300}-\u{1f5ff}\u{1f900}-\u{1f9ff}\u{1f600}-\u{1f64f}\u{1f680}-\u{1f6ff}\u{2600}-\u{26ff}\u{2700}-\u{27bf}\u{1f1e6}-\u{1f1ff}\u{1f191}-\u{1f251}\u{1f004}\u{1f0cf}\u{1f170}-\u{1f171}\u{1f17e}-\u{1f17f}\u{1f18e}\u{3030}\u{2b50}\u{2b55}\u{2934}-\u{2935}\u{2b05}-\u{2b07}\u{2b1b}-\u{2b1c}\u{3297}\u{3299}\u{303d}\u{00a9}\u{00ae}\u{2122}\u{23f3}\u{24c2}\u{23e9}-\u{23ef}\u{25b6}\u{23f8}-\u{23fa}$]/u
 const messageURLTestRegex = /^https:\/\/discord.com\/channels\/([0-9]+)\/([0-9]+)\/([0-9]+)$/
 var messageURLRegex = /https:\/\/discord.com\/channels\/([0-9]+)\/([0-9]+)\/([0-9]+)/
 export default async function (interaction, options, { api, con, guilds, database }) {
@@ -9,7 +9,7 @@ export default async function (interaction, options, { api, con, guilds, databas
     case "set":
       console.log(emojiRegex.test(options.options.emoji))
       if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
-      if (!emojiRegex.test(options.options.emoji) && !isEmoji(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
+      if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
       var matches = messageURLRegex.exec(options.options.message)
       console.log(matches, options.options.message)
       var guildID = matches[1]
@@ -37,7 +37,7 @@ export default async function (interaction, options, { api, con, guilds, databas
       break;
     case "remove":
       if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
-      if (!emojiRegex.test(options.options.emoji) && !isEmoji(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
+      if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
       var matches = messageURLRegex.exec(options.options.message)
       var guildID = matches[1]
       if (guildID !== interaction.guild_id) return interaction.respond(4, { content: "The message must be in the same guild." })
@@ -60,7 +60,7 @@ export default async function (interaction, options, { api, con, guilds, databas
       break;
     case "reassign":
       if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
-      if (!emojiRegex.test(options.options.emoji) && !isEmoji(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
+      if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
       var matches = messageURLRegex.exec(options.options.message)
       var guildID = matches[1]
       if (guildID !== interaction.guild_id) return interaction.respond(4, { content: "The message must be in the same guild." })
