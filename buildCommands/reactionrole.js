@@ -60,13 +60,13 @@ api.sendRequest({
           {
             type: 3,
             name: "message",
-            required: true,
+            required: false,
             description: "The link to the message."
           },
           {
             type: 3,
             name: "emoji",
-            required: true,
+            required: false,
             description: "The emoji to trigger the role give."
           }
         ]
