@@ -70,9 +70,10 @@ export default async function (interaction, options, { api, con, guilds, databas
         if (!await (await guilds.get(interaction.guild_id)).channels.get(channelID)) return interaction.respond(4, { content: "The channel is nonexistent" })
         msgID = matches[3]
       }
+
+      await interaction.respond(5)
       var emoji = getEmoji(options.options.emoji)
       var guildData = await database.get(interaction.guild_id) || {}
-      interaction.respond(4, { content: "Done!" })
       var reactionRoles = guildData.reactRoles || []
       var reactionCache = {}
       for (var reactRole of reactionRoles) {
@@ -95,6 +96,7 @@ export default async function (interaction, options, { api, con, guilds, databas
           })
         })
       }
+      interaction.editOriginal({content: "Done"})
   }
 }
 function getEmoji(str) {
