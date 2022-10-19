@@ -23,6 +23,7 @@ export default async function (interaction, options, { api, con, guilds, databas
       guildData.reactRoles = guildData.reactRoles.filter(a => a.msgID !== msgID || a.id !== emoji.id || a.name !== emoji.name)
       guildData.reactRoles.push({
         msgID,
+        channelID,
         role: options.options.role.id,
         ...emoji
       })
@@ -37,7 +38,7 @@ export default async function (interaction, options, { api, con, guilds, databas
       break;
     case "remove":
       if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
-      if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
+      if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji) && options.options.hasOwnProperty("emoji")) return interaction.respond(4, { content: "This is not a valid emoji" })
       var matches = messageURLRegex.exec(options.options.message)
       var guildID = matches[1]
       if (guildID !== interaction.guild_id) return interaction.respond(4, { content: "The message must be in the same guild." })
@@ -59,34 +60,41 @@ export default async function (interaction, options, { api, con, guilds, databas
       } catch { }
       break;
     case "reassign":
-      if (!messageURLTestRegex.test(options.options.message)) return interaction.respond(4, { content: "Message URL is not valid" })
-      if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji)) return interaction.respond(4, { content: "This is not a valid emoji" })
-      var matches = messageURLRegex.exec(options.options.message)
-      var guildID = matches[1]
-      if (guildID !== interaction.guild_id) return interaction.respond(4, { content: "The message must be in the same guild." })
-      var channelID = matches[2]
-      if (!await (await guilds.get(interaction.guild_id)).channels.get(channelID)) return interaction.respond(4, { content: "The channel is nonexistent" })
-      var msgID = matches[3]
+      if (!emojiRegex.test(options.options.emoji) && !unicodeEmojiRegex.test(options.options.emoji) && options.options.hasOwnProperty("emoji")) return interaction.respond(4, { content: "This is not a valid emoji" })
+      var guildID, channelID, msgID = null;
+      if (options.options.hasOwnProperty("message")) {
+        matches = messageURLRegex.exec(options.options.message)
+        guildID = matches[1]
+        if (guildID !== interaction.guild_id) return interaction.respond(4, { content: "The message must be in the same guild." })
+        channelID = matches[2]
+        if (!await (await guilds.get(interaction.guild_id)).channels.get(channelID)) return interaction.respond(4, { content: "The channel is nonexistent" })
+        msgID = matches[3]
+      }
       var emoji = getEmoji(options.options.emoji)
       var guildData = await database.get(interaction.guild_id) || {}
-      var reactions = await (await api.sendRequest({
-        endpoint: `/channels/${channelID}/messages/${msgID}/reactions/${emoji.id ? `${emoji.name}%3A${emoji.id}` : encodeURIComponent(emoji.name)}?limit=100`,
-        method: "GET"
-      })).json()
+      interaction.respond(4, { content: "Done!" })
       var reactionRoles = guildData.reactRoles || []
-      var reactionRole = reactionRoles.find(a => a.msgID == msgID && a.id == emoji.id && a.name == emoji.name)
-      if(reactionRole == undefined) return interaction.respond("That reactionRole does not exist")
-      for (var user of reactions) {
-        if(user.id == con.applicationID) continue 
-        api.sendRequest({
-          endpoint: `/guilds/${guildID}/members/${user.id}/roles/${reactionRole.role}`,
-          method: "PUT",
-          additionalHeaders: {
-            "x-audit-log-reason": `Reaction Role for MessageID ${msgID}`
-          }
+      var reactionCache = {}
+      for (var reactRole of reactionRoles) {
+        if (options.options.hasOwnProperty("emoji") && (emoji.id !== reactRole.id || emoji.name !== reactRole.name)) continue;
+        if (options.options.hasOwnProperty("message") && reactRole.msgID !== msgID) continue;
+        var reactEmoji = reactRole.id ? `${reactRole.name}%3A${reactRole.id}` : encodeURIComponent(reactRole.name);
+        if (!reactionCache[reactRole.msgID] || !reactionCache[reactRole.msgID][reactEmoji]) {
+          var reactions = await (await api.sendRequest({
+            endpoint: `/channels/${channelID}/messages/${reactRole.msgID}/reactions/${reactEmoji}`,
+            method: "GET"
+          })).json()
+          reactionCache[reactRole.msgID] = reactionCache[reactRole.msgID] || {}
+          reactionCache[reactRole.msgID][reactEmoji] = reactions
+        }
+        var reactions = reactionCache[reactRole.msgID][reactEmoji]
+        reactions.forEach(a => {
+          api.sendRequest({
+            endpoint: `/guilds/${interaction.guild_id}/members/${a.id}/roles/${reactRole.role}`,
+            method: "GET"
+          })
         })
       }
-      interaction.respond(4, {content: "Done!"})
   }
 }
 function getEmoji(str) {

@@ -4,13 +4,13 @@
     "\\applicationCommands",
     "\\autocompleteCommands",
     "\\buildCommands",
-    "\\lib",
     "\\lib\\builders",
     "\\lib\\cache",
     "\\lib\\types",
     "\\lib\\utils",
-    "\\lib\\ws"
+    "\\lib\\ws",
+    "\\startup"
   ],
-  "SelectedNode": "\\lib\\cache\\Cache.js",
+  "SelectedNode": "\\applicationCommands\\reactionrole.js",
   "PreviewInSolutionExplorer": false
 }
