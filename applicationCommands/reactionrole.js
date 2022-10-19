@@ -89,12 +89,13 @@ export default async function (interaction, options, { api, con, guilds, databas
           reactionCache[reactRole.msgID][reactEmoji] = reactions
         }
         var reactions = reactionCache[reactRole.msgID][reactEmoji]
-        reactions.forEach(a => {
-          api.sendRequest({
+        for (var a of reactions) {
+          if (a.id == con.applicationID) continue;
+          await api.sendRequest({
             endpoint: `/guilds/${interaction.guild_id}/members/${a.id}/roles/${reactRole.role}`,
             method: "PUT"
           })
-        })
+        }
       }
       interaction.editOriginal({content: "Done"})
   }
