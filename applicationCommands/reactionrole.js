@@ -81,7 +81,7 @@ export default async function (interaction, options, { api, con, guilds, databas
         var reactEmoji = reactRole.id ? `${reactRole.name}%3A${reactRole.id}` : encodeURIComponent(reactRole.name);
         if (!reactionCache[reactRole.msgID] || !reactionCache[reactRole.msgID][reactEmoji]) {
           var reactions = await (await api.sendRequest({
-            endpoint: `/channels/${channelID}/messages/${reactRole.msgID}/reactions/${reactEmoji}`,
+            endpoint: `/channels/${reactRole.channelID}/messages/${reactRole.msgID}/reactions/${reactEmoji}`,
             method: "GET"
           })).json()
           reactionCache[reactRole.msgID] = reactionCache[reactRole.msgID] || {}
@@ -91,7 +91,7 @@ export default async function (interaction, options, { api, con, guilds, databas
         reactions.forEach(a => {
           api.sendRequest({
             endpoint: `/guilds/${interaction.guild_id}/members/${a.id}/roles/${reactRole.role}`,
-            method: "GET"
+            method: "PUT"
           })
         })
       }
