@@ -91,7 +91,7 @@ export default async function (interaction, options, { api, con, guilds, databas
         var reactions = reactionCache[reactRole.msgID][reactEmoji]
         for (var a of reactions) {
           if (a.id == con.applicationID) continue;
-          await api.sendRequest({
+          api.sendRequest({
             endpoint: `/guilds/${interaction.guild_id}/members/${a.id}/roles/${reactRole.role}`,
             method: "PUT"
           })
