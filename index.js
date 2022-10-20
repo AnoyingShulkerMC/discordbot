@@ -1,5 +1,5 @@
 import GatewayConnection from "./lib/GatewayConnection.js"
-import APIManager from "./lib/APIManager.js"
+import { default as APIManager, DiscordAPIError } from "./lib/APIManager.js"
 import Interaction from "./lib/types/Interaction.js"
 
 import { createWriteStream, readdirSync } from "node:fs"
@@ -17,6 +17,7 @@ const useEndpointURL = true
 
 const publicKey = process.env.PUBKEY
 const token = process.env.TOKEN
+const errorChannelID = "1032524821701070849"
 const api = new APIManager(token)
 const con = new GatewayConnection(token, {
   intents: [GatewayConnection.INTENT_FLAGS.GUILDS, GatewayConnection.INTENT_FLAGS.GUILD_MESSAGE_REACTIONS],
@@ -198,6 +199,36 @@ function parseCommandOptions(options, resolved) {
   })
   return { subCmdInvoked, subCmdGroupInvoked, options: options1 }
 }
+process.on("unhandledRejection", (err) => {
+  if (err instanceof DiscordAPIError) {
+    api.sendRequest({
+      endpoint: `/channels/1032524821701070849/messages`,
+      method: "POST",
+      payload: JSON.stringify({
+        embeds: [
+          {
+            title: "DiscordAPIError",
+            description: err.message,
+            fields: [
+              {
+                name: "Endpoint",
+                value: err.endpoint
+              },
+              {
+                name: "Code",
+                value: err.code
+              },
+              {
+                name: "Status",
+                value: err.status
+              }
+            ]
+          }
+        ]
+      })
+    })
+  }
+})
 con.on("debug", e => log.write("[GATEWAY] " + e + "\n"))
 api.on("debug", e => log.write("[API]     " + e + "\n"))
 con.connect()
