@@ -200,6 +200,7 @@ function parseCommandOptions(options, resolved) {
   return { subCmdInvoked, subCmdGroupInvoked, options: options1 }
 }
 process.on("unhandledRejection", (err) => {
+  console.error(err)
   if (err instanceof DiscordAPIError) {
     api.sendRequest({
       endpoint: `/channels/1032524821701070849/messages`,
@@ -208,6 +209,7 @@ process.on("unhandledRejection", (err) => {
         embeds: [
           {
             title: "DiscordAPIError",
+            color: 0xff0000,
             description: err.message,
             fields: [
               {
@@ -223,6 +225,34 @@ process.on("unhandledRejection", (err) => {
                 value: err.status
               }
             ]
+          }
+        ]
+      })
+    })
+  } else if (err instanceof Error) {
+    api.sendRequest({
+      endpoint: `/channels/1032524821701070849/messages`,
+      method: "POST",
+      payload: JSON.stringify({
+        embeds: [
+          {
+            title: err.name,
+            color: 0xff0000,
+            description: err.message
+          }
+        ]
+      })
+    })
+  } else {
+    api.sendRequest({
+      endpoint: `/channels/1032524821701070849/messages`,
+      method: "POST",
+      payload: JSON.stringify({
+        embeds: [
+          {
+            title: "Unamed Error",
+            color: 0xff0000,
+            description: err.toString()
           }
         ]
       })
