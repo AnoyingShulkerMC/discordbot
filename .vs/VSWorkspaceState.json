@@ -2,8 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\applicationCommands",
-    "\\autocompleteCommands",
     "\\buildCommands",
+    "\\lib",
     "\\lib\\builders",
     "\\lib\\cache",
     "\\lib\\types",
@@ -11,6 +11,6 @@
     "\\lib\\ws",
     "\\startup"
   ],
-  "SelectedNode": "\\applicationCommands\\reactionrole.js",
+  "SelectedNode": "\\lib\\utils\\FormData.js",
   "PreviewInSolutionExplorer": false
 }

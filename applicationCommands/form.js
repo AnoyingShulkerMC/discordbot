@@ -1,8 +1,9 @@
 import { stringify } from "csv-stringify"
+import { response } from "express"
 import FormData from "../lib/utils/FormData.js"
 export default async function (interaction, options, { api, con, addComponentListener, addModalListener }) {
   console.log(options)
-  var timesPressed = 0
+  var responses = 0
   await interaction.respond(4, {
     content: "You are making a form",
     components: [
@@ -47,10 +48,10 @@ export default async function (interaction, options, { api, con, addComponentLis
   var message = await interaction.getOriginal()
   var modalOptions = {}
   var spreadsheet = []
-  var embed = {fields: []}
+  var embed = { fields: [] }
   addComponentListener(message.id, "add_option_paragraph", async component => {
     var custom_id = "add_option_" + Date.now()
-    if (modal.components.length == 5) return component.respond(4, {flags: 64, content: "Form inputs are limited to 5 inputs"})
+    if (modal.components.length == 5) return component.respond(4, { flags: 64, content: "Form inputs are limited to 5 inputs" })
     await component.respond(9, {
       title: "Add Option",
       custom_id,
@@ -88,7 +89,7 @@ export default async function (interaction, options, { api, con, addComponentLis
         type: 1,
         components: [component]
       })
-      embed.fields.push({name: values.label, value: `Type: Paragraph\nPlaceholder: ${values.placeholder === ""? "N/A" : values.placeholder}`})
+      embed.fields.push({ name: values.label, value: `Type: Paragraph\nPlaceholder: ${values.placeholder === "" ? "N/A" : values.placeholder}` })
       i.respond(7, {
         embeds: [embed]
       })
@@ -127,7 +128,7 @@ export default async function (interaction, options, { api, con, addComponentLis
     })
     addModalListener(custom_id, (i, values) => {
       var modalId = "form_option_" + Date.now()
-      var component = { label: values.label, custom_id: "form_option_"+Date.now(), style: 1, type: 4 }
+      var component = { label: values.label, custom_id: "form_option_" + Date.now(), style: 1, type: 4 }
       if (values.placeholder !== "") component.placeholder = values.placeholder
       modalOptions[modalId] = values.label
       modal.components.push({
@@ -147,10 +148,45 @@ export default async function (interaction, options, { api, con, addComponentLis
   addComponentListener(message.id, "publish", async (i) => {
     if (modal.components.length == 0) return i.respond(4, { flags: 64, content: "Forms must have atlest one text box" })
     if ((parseInt(i.app_permissions) & 3072) == 0) return i.respond(4, { flags: 64, content: "I do not have `View Channel` and `Send Message` permissions" })
-    var msg = await (await api.sendRequest({
-      method: "POST",
-      endpoint: `/channels/${i.channel_id}/messages`,
-      payload: JSON.stringify({
+    var msg = interaction.editOriginal({
+      components: [{
+        type: 1,
+        components: [
+          {
+            type: 2,
+            style: 1,
+            label: "Fill Form",
+            custom_id: "fill_form"
+          },
+          {
+            type: 2,
+            style: 1,
+            label: "Export CSV",
+            custom_id: "export_csv"
+          }
+        ]
+      }],
+      embeds: [{
+        title: options.options.title,
+        footer: {
+          text: "Recieved 0 response"
+        }
+      }]
+    })
+    addComponentListener(msg.id, "export_csv", async a => {
+      await a.respond(5, { flags: 64 })
+      var formParams = new FormData()
+      stringify(spreadsheet, (err, data) => {
+        if (err) throw err
+        formParams.append("files[0]", data, "spreadsheet.csv")
+        a.editOriginal({}, {
+          additionalHeaders: {
+            "Content-Type": `multipart/form-data; boundary=${formParams.boundary}`
+          },
+          payload: formParams.toBuffer()
+        })
+      })
+      interaction.editOriginal({
         components: [{
           type: 1,
           components: [
@@ -167,42 +203,34 @@ export default async function (interaction, options, { api, con, addComponentLis
               custom_id: "export_csv"
             }
           ]
+        }],
+        embeds: [{
+          title: options.options.title,
+          footer: {
+            text: `Recieved ${++responses} response${response > 1 ? "s" : ""}`
+          }
         }]
       })
-    })).json()
-    interaction.deleteOriginal()
-    addComponentListener(msg.id, "export_csv", async a => {
-      await a.respond(5, { flags: 64 })
-      var formParams = new FormData()
-      stringify(spreadsheet, (err, data) => {
-        if (err) throw err
-        formParams.append("files[0]", data, "spreadsheet.csv")
-        a.editOriginal({}, {
-          additionalHeaders: {
-            "Content-Type": `multipart/form-data; boundary=${formParams.boundary}`
-          },
-          payload: formParams.toBuffer()
-        })
-      })
     })
-    addComponentListener(msg.id, "fill_form", (a) => {
-      a.respond(9, modal)
-    })
-    var headers = {}
-    for (var value of Object.values(modalOptions)) {
-      headers[value] = value
-    }
-    headers["User"] = "User"
-    spreadsheet.push(headers)
-    addModalListener(modal_id, (a, values) => {
-      a.respond(4, { content: "Form submitted", flags: 64 })
-      var object = {}
-      for (var [key, value] of Object.entries(values)) {
-        object[modalOptions[key]] = value
-      }
-      object["User"] = a.member.user.username + "#" + a.member.user.discriminator
-      spreadsheet.push(object)
-    })
-    i.respond(4, {flags: 64, content: "Done!"})
   })
+  addComponentListener(msg.id, "fill_form", (a) => {
+    a.respond(9, modal)
+  })
+  var headers = {}
+  for (var value of Object.values(modalOptions)) {
+    headers[value] = value
+  }
+  headers["User"] = "User"
+  spreadsheet.push(headers)
+  addModalListener(modal_id, (a, values) => {
+    a.respond(4, { content: "Form submitted", flags: 64 })
+    var object = {}
+    for (var [key, value] of Object.entries(values)) {
+      object[modalOptions[key]] = value
+    }
+    object["User"] = a.member.user.username + "#" + a.member.user.discriminator
+    spreadsheet.push(object)
+  })
+  i.respond(4, { flags: 64, content: "Done!" })
+})
 }

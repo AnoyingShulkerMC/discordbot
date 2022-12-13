@@ -13,7 +13,7 @@ import fetch from "node-fetch"
 import GuildManager from "./lib/cache/GuildManager.js"
 
 const logFiles = false
-const useEndpointURL = true
+const useEndpointURL = false
 
 const publicKey = process.env.PUBKEY
 const token = process.env.TOKEN
