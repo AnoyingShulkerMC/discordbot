@@ -12,8 +12,8 @@ import Database from "@replit/database"
 import fetch from "node-fetch"
 import GuildManager from "./lib/cache/GuildManager.js"
 
-const logFiles = false
-const useEndpointURL = false
+const logFiles = true
+const useEndpointURL = true
 
 const publicKey = process.env.PUBKEY
 const token = process.env.TOKEN
